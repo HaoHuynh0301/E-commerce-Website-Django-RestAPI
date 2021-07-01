@@ -24,7 +24,7 @@ class Product(models.Model):
     name = models.CharField(max_length = 255, blank = True)
     slug = models.SlugField()
     description = models.CharField(max_length = 255, blank = True)
-    price = models.DecimalField(max_degits = 6, decimal_places = 2)
+    price = models.DecimalField(max_digits = 6, decimal_places = 2)
     image = models.ImageField(upload_to = 'images/', null = True, blank = True)
     thumbnail = models.ImageField(upload_to = 'image/', null = True, blank = True)
     date_published = models.DateTimeField(auto_now_add=True)
