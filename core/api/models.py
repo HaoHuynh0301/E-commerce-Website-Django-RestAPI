@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
+from io import BytesIO
+from PIL import Image
+from django.core.files import File
 
 class Category(models.Model):
     name = models.CharField(max_length = 255, blank = True)
@@ -53,3 +56,14 @@ class Product(models.Model):
         except:
             url = ''
         return url
+    
+    @property
+    def makeThumbnail(self, image, size = (300, 200)):
+        img = Image.open(image)
+        img.convert('RGB')
+        img.thumbnail(size)
+        thumb_io = BytesIO()
+        img.save(thumb_io, 'JPEG', quality = 85)
+        thumbnail = File(thumb_io, name = image.name)
+        
+        
