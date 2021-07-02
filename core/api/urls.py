@@ -11,5 +11,6 @@ Router.register('product', views.ProductViewSet, basename = 'product')
 Router.register('category', views.CategoryViewSet, basename = 'category')
 
 urlpatterns = [
-    path('', include(Router.urls))
+    path('', include(Router.urls)),
+    path('signin/', views.CustomerSignIn.as_view(), name = 'signin')
 ]

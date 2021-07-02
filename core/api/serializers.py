@@ -12,3 +12,8 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Category
         fields = ['name']
+        
+class SignInCustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Customer
+        fields = ['email', 'password']
