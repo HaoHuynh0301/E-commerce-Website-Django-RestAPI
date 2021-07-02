@@ -7,7 +7,8 @@ from rest_framework.schemas import get_schema_view
 app_name = 'api'
 
 Router = DefaultRouter()
-Router.register('', views.ProductViewSet, basename = 'product')
+Router.register('product', views.ProductViewSet, basename = 'product')
+Router.register('category', views.CategoryViewSet, basename = 'category')
 
 urlpatterns = [
     path('', include(Router.urls))

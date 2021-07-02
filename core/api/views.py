@@ -12,13 +12,24 @@ from rest_framework import status
 from rest_framework import generics
 
 class ProductViewSet(viewsets.ModelViewSet):
-    permissions_classes = [permissions.AllowAny]
+    permissions_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = serializers.ProductSerializer
     
     def get_queryset(self):
         return models.Product.objects.all()
     
     def get_object(self, queryset = None, **kwargs):
-        productID = self.kwargs.get('id')
+        productID = self.kwargs.get('pk')
         return get_object_or_404(models.Product, pk = productID)
+    
+class CategoryViewSet(viewsets.ModelViewSet):
+    permissions_classes = [permissions.AllowAny]
+    serializers_class = serializers.CategorySerializer
+    
+    def get_queryset(self):
+        return models.Category.objects.all()
+    
+    def get_object(self, queryset = None, **kwargs):
+        categoryID = self.kwargs.get('pk')
+        return get_object_or_404(models.Category, id = categoryID)
     
