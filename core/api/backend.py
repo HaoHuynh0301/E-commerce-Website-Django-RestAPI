@@ -5,12 +5,11 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from . import models
 
-class SignInBackEnd(BaseBackend):
+class SignInBackEnd:
     def authenticate(self, email = None, password = None):
-        print("Hello")
+        print(email)
         try:
             customer = models.Customer.objects.get(email = email)
-            print(customer.get('password'))
             if check_password(password, customer.get('password')):
                 return customer
             return None

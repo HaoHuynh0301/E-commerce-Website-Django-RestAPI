@@ -36,14 +36,13 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class CustomerSignIn(APIView):
     permission_classes = [permissions.AllowAny]
     def post(self, request):
-        print(request.data)
         try:
             customerInstance = SignInBackEnd.authenticate(
-                                                        request.data.get('email'), 
-                                                        request.data.get('password'))
+                                                        email = request.data.get('email'), 
+                                                        password = request.data.get('password'))
             if customerInstance == None:
                 return Response("EMAIL OR PASSWORD IS INVALID", status = status.HTTP_400_BAD_REQUEST)
         except:
-            return Response("BAD REQUEST", status = status.HTTP_400_BAD_REQUEST)
+            return Response("BAD REQUEST VIEW", status = status.HTTP_400_BAD_REQUEST)
         serializer = serializers.SignInCustomerSerializer(customerInstance)
         return Response(serializer.data, status = status.HTTP_200_OK)
