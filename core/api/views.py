@@ -1,14 +1,15 @@
-from django.shortcuts import render, get_object_or_404
 from . import models
 from . import serializers
 # from .backend import SignInBackEnd
-from django.contrib.auth import authenticate
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.decorators import action, permission_classes
 from rest_framework import viewsets 
 from rest_framework import permissions
 from rest_framework import status
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
+from django.shortcuts import render, get_object_or_404
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.decorators import action, permission_classes
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -36,6 +37,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class CustomerSignIn(APIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignInCustomerSerializer
+    
     def post(self, request):
         serializer = self.serializer_class(data = request.data)
         if serializer.is_valid():
@@ -50,6 +52,18 @@ class CustomerSignIn(APIView):
                     'refresh_token': str(refresh),
                     'access_token': str(refresh.access_token)
                 }
-                return Response(data, status=status.HTTP_200_OK)
+                return Response(data, status = status.HTTP_200_OK)
             return Response('EMAIL OR PASSWORD IS INCORRECT!', status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+class RegisterCustomer(APIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.CustomerSerializer
+    
+    def post(self, request):
+        serializer = self.serializer_class(data = request.data)
+        if serializer.is_valid():
+            serializer.validated_data['password'] = make_password(serializer.validated_data['password'])
+            newCustomer = serializer.save()
+            return Response('CUSTOMER CREATED!', status = status.HTTP_201_CREATED)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)

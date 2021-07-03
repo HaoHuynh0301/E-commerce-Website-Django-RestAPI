@@ -17,3 +17,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class SignInCustomerSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length = 255, required = True)
     password = serializers.CharField()
+    
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Customer
+        fields = ['email', 'user_name', 'name', 'date_of_birth', 'password']
