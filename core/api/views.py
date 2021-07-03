@@ -67,3 +67,27 @@ class RegisterCustomer(APIView):
             newCustomer = serializer.save()
             return Response('CUSTOMER CREATED!', status = status.HTTP_201_CREATED)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+class OrderViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = serializers.OrderSerializer
+    
+    def get_queryset(self):
+        return models.Order.objects.all()
+    
+    def get_object(self, queryset = None, **kwargs):
+        orderID = self.kwargs.get('pk')
+        return get_object_or_404(models.Order, id = orderID)
+    
+    @action(detail = True, methods = ['get'], permission_classes = [permissions.AllowAny])
+    def totalproduct(self, request, pk = None):
+        Order = self.get_object(pk = pk)
+        totalProducts = Order.getTotalProducts
+        print(totalProducts)
+        serializer = serializers.TotalProductsOrderSerializer(data = {'totalProduct': totalProducts})
+        if serializer.is_valid():
+            context = {
+                'totalProduct': str(serializer.validated_data['totalProduct'])
+            }
+            return Response(context, status = status.HTTP_200_OK)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)

@@ -22,3 +22,11 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Customer
         fields = ['email', 'user_name', 'name', 'date_of_birth', 'password']
+        
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Order
+        fields = ['customer']
+
+class TotalProductsOrderSerializer(serializers.Serializer):
+    totalProduct = serializers.IntegerField()

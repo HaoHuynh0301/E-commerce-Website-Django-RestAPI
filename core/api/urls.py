@@ -9,6 +9,7 @@ app_name = 'api'
 Router = DefaultRouter()
 Router.register('product', views.ProductViewSet, basename = 'product')
 Router.register('category', views.CategoryViewSet, basename = 'category')
+Router.register('order', views.OrderViewSet, basename = 'order')
 
 urlpatterns = [
     path('', include(Router.urls)),
