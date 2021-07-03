@@ -120,4 +120,40 @@ class Product(models.Model):
         img.save(thumb_io, 'JPEG', quality = 85)
         thumbnail = File(thumb_io, name = image.name)
         
-        
+class Order(models.Model):
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, null = True, blank = True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    paid = models.BooleanField(default = False)
+    
+    def __str__(self):
+        return str(self.customer.name)
+    
+    @property
+    def getTotalProducts(self):
+        totalProducts = 0
+        products = self.orderdetail_set.all()
+        for product in products:
+            totalProducts += product.amount
+        return totalProducts
+    
+    @property
+    def getTotalProductsPrice(self):
+        totalProductsPrice = 0
+        products = self.orderdetail_set.all()
+        for product in products:
+            totalProductsPrice += product.getProductsPrice()
+        return totalProductsPrice
+    
+class OrderDetail(models.Model):
+    order = models.ForeignKey(Order, on_delete = models.CASCADE)
+    product = models.ForeignKey(Product, on_delete = models.SET_NULL, null = True, blank = True)
+    amount = models.IntegerField(default = 1)
+    
+    def __str__(self):
+        return str(self.product.name)
+    
+    @property
+    def getProductsPrice(self):
+        return (self.product.price * self.amount)
+            
+    
