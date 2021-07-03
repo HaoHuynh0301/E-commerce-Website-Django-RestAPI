@@ -50,7 +50,7 @@ class Customer(AbstractBaseUser):
     REQUIRED_FIELDS = ['user_name', 'name', 'date_of_birth']
     
     def __str__(self):
-        return str(self.email)
+        return self.email
     
     @property
     def is_staff(self):

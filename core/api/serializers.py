@@ -14,11 +14,6 @@ class CategorySerializer(serializers.ModelSerializer):
         model = models.Category
         fields = ['name']
         
-class SignInCustomerSerializer(serializers.ModelSerializer):
-    def validate(self, data):
-        return False
-    class Meta:
-        model = models.Customer
-        fields = ['email', 'password']
-        validators = []
-        extra_kwargs = {'password': {'write_only': True}}   
+class SignInCustomerSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length = 255, required = True)
+    password = serializers.CharField()

@@ -9,11 +9,7 @@ from rest_framework.decorators import action, permission_classes
 from rest_framework import viewsets 
 from rest_framework import permissions
 from rest_framework import status
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    
-)
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
     permissions_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -39,8 +35,21 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
 class CustomerSignIn(APIView):
     permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.SignInCustomerSerializer
     def post(self, request):
-        serializer = serializers.SignInCustomerSerializer(data = request.data)
+        serializer = self.serializer_class(data = request.data)
         if serializer.is_valid():
-            return Response("OK", status = status.HTTP_200_OK)
+            Customer = authenticate(
+                request,
+                email = serializer.validated_data['email'],
+                password = serializer.validated_data['password']
+            )
+            if Customer:
+                refresh = TokenObtainPairSerializer.get_token(Customer)
+                data = {
+                    'refresh_token': str(refresh),
+                    'access_token': str(refresh.access_token)
+                }
+                return Response(data, status=status.HTTP_200_OK)
+            return Response('EMAIL OR PASSWORD IS INCORRECT!', status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
