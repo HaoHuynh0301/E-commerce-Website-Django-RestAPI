@@ -7,11 +7,11 @@ from . import models
 
 class SignInBackEnd:
     def authenticate(self, email = None, password = None):
-        print(email)
         try:
-            customer = models.Customer.objects.get(email = email)
+            customer = models.Customer.objects.filter(email = email)
             if check_password(password, customer.get('password')):
                 return customer
+            print("Hello")
             return None
         except models.Customer.DoesNotExist:
             return None
