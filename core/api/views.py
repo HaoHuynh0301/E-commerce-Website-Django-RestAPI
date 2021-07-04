@@ -95,7 +95,7 @@ class UpdatePassword(APIView):
 class Test(APIView):
     permission_classes = [permissions.AllowAny]
     def get(self, request):
-        mail_subject = 'Activate your blog account.'
+        mail_subject = 'Activate your blog account'
         message = render_to_string('template.html', {
             'user': 'hao',
             'domain': 'http://127.0.0.1:8000/',
