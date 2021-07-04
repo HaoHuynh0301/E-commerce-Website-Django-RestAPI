@@ -68,13 +68,24 @@ class CustomerSignIn(APIView):
 class RegisterCustomer(APIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.CustomerSerializer
-    
     def post(self, request):
         serializer = self.serializer_class(data = request.data)
         if serializer.is_valid():
             serializer.validated_data['password'] = make_password(serializer.validated_data['password'])
             newCustomer = serializer.save()
             return Response('CUSTOMER CREATED!', status = status.HTTP_201_CREATED)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+class UpdatePassword(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request):
+        serializer = serializers.UpdateCustomerPassword(data = request.data)
+        if serializer.is_valid():
+            # newPassword = make_password(serializer.validated_data['password'])
+            CustomerInstance = models.Customer.objects.get(email = serializer.validated_data['email'])
+            CustomerInstance.set_password(serializer.validated_data['password'])
+            CustomerInstance.save()
+            return Response("YOUR ACCOUNT WAS UPDATED!", status = status.HTTP_200_OK)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
 class OrderViewSet(viewsets.ModelViewSet):

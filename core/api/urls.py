@@ -14,5 +14,6 @@ Router.register('order', views.OrderViewSet, basename = 'order')
 urlpatterns = [
     path('', include(Router.urls)),
     path('signin/', views.CustomerSignIn.as_view(), name = 'signin'),
-    path('register/', views.RegisterCustomer.as_view(), name = 'register')
+    path('register/', views.RegisterCustomer.as_view(), name = 'register'),
+    path('update/', views.UpdatePassword.as_view(), name = 'update')
 ]
