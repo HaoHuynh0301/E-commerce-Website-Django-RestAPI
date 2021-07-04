@@ -76,6 +76,14 @@ class Category(models.Model):
     def get_absolute_url(self):
         return f'/{self.slug}/'
     
+    @property
+    def getTotalProduct(self):
+        products = self.product.all()
+        totalProducts = 0
+        for product in products:
+            totalProducts += 1
+        return totalProducts
+    
 class Product(models.Model):
     category = models.ForeignKey(Category, related_name = 'product', on_delete = models.CASCADE)
     name = models.CharField(max_length = 255, blank = True)
@@ -141,7 +149,7 @@ class Order(models.Model):
         totalProductsPrice = 0
         products = self.orderdetail_set.all()
         for product in products:
-            totalProductsPrice += product.getProductsPrice()
+            totalProductsPrice += product.getProductsPrice
         return totalProductsPrice
     
 class OrderDetail(models.Model):

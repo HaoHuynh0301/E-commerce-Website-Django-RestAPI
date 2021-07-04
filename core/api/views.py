@@ -25,7 +25,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     
 class CategoryViewSet(viewsets.ModelViewSet):
     permissions_classes = [permissions.IsAuthenticatedOrReadOnly]
-    serializers_class = serializers.CategorySerializer
+    serializer_class = serializers.CategorySerializer
     
     def get_queryset(self):
         return models.Category.objects.all()
@@ -33,6 +33,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
     def get_object(self, queryset = None, **kwargs):
         categoryID = self.kwargs.get('pk')
         return get_object_or_404(models.Category, id = categoryID)
+    
+    @action(detail = True, methods = ['get'], permission_classes = [permissions.AllowAny])
+    def getcategoryproduct(self, request, pk = None):
+        Category = self.get_object(pk = pk)
+        totalProduct = Category.getTotalProduct
+        serializer = serializers.TotalCategoryProductsSerializer(data = {'totalProduct': totalProduct})
+        if serializer.is_valid():
+            return Response(serializer.data, status = status.HTTP_200_OK)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
 class CustomerSignIn(APIView):
     permission_classes = [permissions.AllowAny]
@@ -90,4 +99,14 @@ class OrderViewSet(viewsets.ModelViewSet):
                 'totalProduct': str(serializer.validated_data['totalProduct'])
             }
             return Response(context, status = status.HTTP_200_OK)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail = True, methods = ['get'], permission_classes = [permissions.AllowAny])
+    def totalproductprice(self, request, pk = None):
+        Order = self.get_object(pk = pk)
+        totalProductPrice = Order.getTotalProductsPrice
+        print(totalProductPrice)
+        serializer = serializers.TotalProductsPriceOrderSerializer(data = {'totalProductPrice': totalProductPrice})
+        if serializer.is_valid():
+            return Response(serializer.data, status = status.HTTP_200_OK)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)

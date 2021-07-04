@@ -30,3 +30,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class TotalProductsOrderSerializer(serializers.Serializer):
     totalProduct = serializers.IntegerField()
+    
+class TotalProductsPriceOrderSerializer(serializers.Serializer):
+    totalProductPrice = serializers.DecimalField(max_digits = 6, decimal_places = 2)
+
+class TotalCategoryProductsSerializer(serializers.Serializer):
+    totalProduct = serializers.IntegerField()
