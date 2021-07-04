@@ -163,5 +163,7 @@ class OrderDetail(models.Model):
     @property
     def getProductsPrice(self):
         return (self.product.price * self.amount)
+    
+
             
     

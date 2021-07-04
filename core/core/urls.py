@@ -10,6 +10,7 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path('verification/', include('verify_email.urls')),
 ]
 
 if settings.DEBUG:

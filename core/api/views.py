@@ -12,6 +12,10 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action, permission_classes
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.core.mail import EmailMessage
+
 class ProductViewSet(viewsets.ModelViewSet):
     permissions_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = serializers.ProductSerializer
@@ -87,6 +91,26 @@ class UpdatePassword(APIView):
             CustomerInstance.save()
             return Response("YOUR ACCOUNT WAS UPDATED!", status = status.HTTP_200_OK)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+class Test(APIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        mail_subject = 'Activate your blog account.'
+        message = render_to_string('template.html', {
+            'user': 'hao',
+            'domain': 'http://127.0.0.1:8000/',
+            'uid': 'uid',
+            'token': 'token',
+        })
+        to_email = 'hao152903@gmail.com'
+        email = EmailMessage(
+            mail_subject, message, to=[to_email]
+        )
+        try:
+            email.send()
+            return Response("SEND", status = status.HTTP_200_OK)
+        except Exception as err:
+            return Response(str(err), status = status.HTTP_400_BAD_REQUEST)
     
 class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]

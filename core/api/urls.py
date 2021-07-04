@@ -15,5 +15,6 @@ urlpatterns = [
     path('', include(Router.urls)),
     path('signin/', views.CustomerSignIn.as_view(), name = 'signin'),
     path('register/', views.RegisterCustomer.as_view(), name = 'register'),
-    path('update/', views.UpdatePassword.as_view(), name = 'update')
+    path('update/', views.UpdatePassword.as_view(), name = 'update'),
+    path('test/', views.Test.as_view(), name = 'test')
 ]
