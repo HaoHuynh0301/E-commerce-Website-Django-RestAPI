@@ -86,7 +86,7 @@ class VerifyEmail(APIView):
     def get(self, request):
         token = request.GET.get('token')
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY)
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
             CustomerInstance = models.Customer.objects.get(id = payload['user_id'])
             print(CustomerInstance)
             if not CustomerInstance.is_active:
@@ -96,7 +96,7 @@ class VerifyEmail(APIView):
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Activation Expired'}, status = status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token'}, status = status.HTTP_400_BAD_REQUEST)
+            return Response({'error': str(identifier)}, status = status.HTTP_400_BAD_REQUEST)
 
 class RegisterCustomer(APIView):
     permission_classes = [permissions.AllowAny]
