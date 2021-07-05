@@ -31,6 +31,13 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
         fields = ['customer']
+        
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=555)
+
+    class Meta:
+        model = models.Customer
+        fields = ['token']
 
 class TotalProductsOrderSerializer(serializers.Serializer):
     totalProduct = serializers.IntegerField()

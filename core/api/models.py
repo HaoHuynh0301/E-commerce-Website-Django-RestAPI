@@ -30,6 +30,7 @@ class CustomUserManager(BaseUserManager):
             date_of_birth = date_of_birth,
             password = password
         )
+        user.as_active = True
         user.is_admin = True
         user.is_superuser = True
         user.save()
@@ -40,7 +41,7 @@ class Customer(AbstractBaseUser):
     name = models.CharField(max_length = 255, blank = False)
     user_name = models.CharField(max_length = 50, unique = True, blank = False)
     date_of_birth = models.DateField()
-    is_active = models.BooleanField(default = True)
+    is_active = models.BooleanField(default = False)
     is_superuser = models.BooleanField(default = False)
     is_admin = models.BooleanField(default = False)
 

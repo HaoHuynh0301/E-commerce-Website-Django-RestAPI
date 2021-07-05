@@ -1,6 +1,11 @@
 from . import models
 from . import serializers
+from . import utils
+import jwt
 from .backends import SignInBackEnd
+from django.urls import reverse
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets 
 from rest_framework import permissions
 from rest_framework import status
@@ -11,10 +16,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action, permission_classes
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
+from django.conf import settings
 
 class ProductViewSet(viewsets.ModelViewSet):
     permissions_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -68,6 +75,28 @@ class CustomerSignIn(APIView):
                 return Response(data, status = status.HTTP_200_OK)
             return Response('EMAIL OR PASSWORD IS INCORRECT!', status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+class VerifyEmail(APIView):
+    serializer_class = serializers.EmailVerificationSerializer
+
+    token_param_config = openapi.Parameter(
+        'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(manual_parameters=[token_param_config])
+    def get(self, request):
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY)
+            CustomerInstance = models.Customer.objects.get(id = payload['user_id'])
+            print(CustomerInstance)
+            if not CustomerInstance.is_active:
+                CustomerInstance.is_active = True
+                CustomerInstance.save()
+            return Response({'email': 'Successfully activated'}, status = status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError as identifier:
+            return Response({'error': 'Activation Expired'}, status = status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as identifier:
+            return Response({'error': 'Invalid token'}, status = status.HTTP_400_BAD_REQUEST)
 
 class RegisterCustomer(APIView):
     permission_classes = [permissions.AllowAny]
@@ -77,6 +106,15 @@ class RegisterCustomer(APIView):
         if serializer.is_valid():
             serializer.validated_data['password'] = make_password(serializer.validated_data['password'])
             newCustomer = serializer.save()
+            token = RefreshToken.for_user(newCustomer).access_token
+            current_site = get_current_site(request).domain
+            relativeLink = reverse('email-verify')
+            absurl = 'http://' + current_site + relativeLink + "?token=" + str(token)
+            email_body = 'Hi '+ newCustomer.name + \
+            ' Use the link below to verify your email \n' + absurl
+            data = {'email_body': email_body, 'to_email': newCustomer.email,
+                'email_subject': 'Verify your email'}
+            utils.Util.send_email(data)
             return Response('CUSTOMER CREATED!', status = status.HTTP_201_CREATED)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
@@ -91,26 +129,6 @@ class UpdatePassword(APIView):
             CustomerInstance.save()
             return Response("YOUR ACCOUNT WAS UPDATED!", status = status.HTTP_200_OK)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-    
-class Test(APIView):
-    permission_classes = [permissions.AllowAny]
-    def get(self, request):
-        mail_subject = 'Activate your blog account'
-        message = render_to_string('template.html', {
-            'user': 'hao',
-            'domain': 'http://127.0.0.1:8000/',
-            'uid': 'uid',
-            'token': 'token',
-        })
-        to_email = 'hao152903@gmail.com'
-        email = EmailMessage(
-            mail_subject, message, to=[to_email]
-        )
-        try:
-            email.send()
-            return Response("SEND", status = status.HTTP_200_OK)
-        except Exception as err:
-            return Response(str(err), status = status.HTTP_400_BAD_REQUEST)
     
 class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
