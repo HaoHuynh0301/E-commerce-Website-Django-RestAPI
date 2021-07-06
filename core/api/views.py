@@ -2,22 +2,17 @@ from . import models
 from . import serializers
 from . import utils
 import jwt
-from .backends import SignInBackEnd
-from django.urls import reverse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets 
 from rest_framework import permissions
 from rest_framework import status
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action, permission_classes
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
@@ -103,19 +98,9 @@ class RegisterCustomer(APIView):
     serializer_class = serializers.CustomerSerializer
     def post(self, request):
         serializer = self.serializer_class(data = request.data)
-        if serializer.is_valid():
-            serializer.validated_data['password'] = make_password(serializer.validated_data['password'])
-            newCustomer = serializer.save()
-            token = RefreshToken.for_user(newCustomer).access_token
-            current_site = get_current_site(request).domain
-            relativeLink = reverse('email-verify')
-            absurl = 'http://' + current_site + relativeLink + "?token=" + str(token)
-            email_body = 'Hi '+ newCustomer.name + \
-            ' Use the link below to verify your email \n' + absurl
-            data = {'email_body': email_body, 'to_email': newCustomer.email,
-                'email_subject': 'Verify your email'}
-            utils.Util.send_email(data)
-            return Response('CUSTOMER CREATED!', status = status.HTTP_201_CREATED)
+        isValied = utils.Util.registerEmail(request, serializer)
+        if isValied:
+            return Response("YOUR ACCOUNT WAS CREATED!", status = status.HTTP_201_CREATED)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
 class UpdatePassword(APIView):

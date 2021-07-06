@@ -30,7 +30,7 @@ class CustomUserManager(BaseUserManager):
             date_of_birth = date_of_birth,
             password = password
         )
-        user.as_active = True
+        user.is_active = True
         user.is_admin = True
         user.is_superuser = True
         user.save()
