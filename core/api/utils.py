@@ -7,6 +7,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from rest_framework.response import Response
 from rest_framework import status
 from django.urls import reverse
+from . import models
 import threading
 
 class EmailThread(threading.Thread):
@@ -42,4 +43,37 @@ class Util:
             isValid = True
         return isValid
     
-    def 
+    @staticmethod
+    def updatePassword(request, serializer):
+        isValid = False
+        if serializer.is_valid():
+            newPassword = serializer.validated_data['password']
+            CustomerInstance = models.Customer.objects.get(email = serializer.validated_data['email'])
+            if CustomerInstance:
+                CustomerInstance.set_password(newPassword)
+                CustomerInstance.is_active = False
+                CustomerInstance.save()
+                token = RefreshToken.for_user(CustomerInstance).access_token
+                currentSite = get_current_site(request).domain
+                relativeLink = reverse('update-password-verify')
+                absurl = 'http://' + currentSite + relativeLink + "?token=" + str(token)
+                emailBody = 'Hi '+ CustomerInstance.name + \
+                ' Use the link below to verify your email \n' + absurl
+                data = {'email_body': emailBody, 'to_email': CustomerInstance.email,
+                    'email_subject': 'Verify your email'}
+                Util.sendEmail(data)
+                isValid = True
+        return isValid
+    
+    @staticmethod
+    def deactivateCustomer(request, customer):
+        token = RefreshToken.for_user(customer).access_token
+        currentSite = get_current_site(request).domain
+        relativeLink = reverse('deactivate-verify')
+        absurl = 'http://' + currentSite + relativeLink + "?token=" + str(token)
+        emailBody = 'Hi '+ customer.name + \
+        ' Use the link below to verify your email \n' + absurl
+        data = {'email_body': emailBody, 'to_email': customer.email,
+            'email_subject': 'Deactivate your account'}
+        Util.sendEmail(data)
+    

@@ -12,6 +12,9 @@ Router.register('order', views.OrderViewSet, basename = 'order')
 urlpatterns = [
     path('', include(Router.urls)),
     path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
+    path('updatepass-verify/', views.UpdatePasswordVerifyEmail.as_view(), name = 'update-password-verify'),
+    path('deactivate-verify/', views.DeactivationCustomerVerifyEmail.as_view(), name = 'deactivate-verify'),
+    path('deactivate/', views.DeactivateCustomer.as_view(), name = 'deactivate'),
     path('signin/', views.CustomerSignIn.as_view(), name = 'signin'),
     path('register/', views.RegisterCustomer.as_view(), name = 'register'),
     path('update/', views.UpdatePassword.as_view(), name = 'update'),

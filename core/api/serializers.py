@@ -23,10 +23,14 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = models.Customer
         fields = ['email', 'user_name', 'name', 'date_of_birth', 'password']
         
-class UpdateCustomerPassword(serializers.Serializer):
+class UpdateCustomerPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length = 255, required = True)
     password = serializers.CharField()
-            
+
+class DeactivateCustomerSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length = 255, required = True)
+    password = serializers.CharField()
+
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
