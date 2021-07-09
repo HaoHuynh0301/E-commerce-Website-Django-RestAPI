@@ -129,6 +129,7 @@ class Product(models.Model):
         img.save(thumb_io, 'JPEG', quality = 85)
         thumbnail = File(thumb_io, name = image.name)
         
+        
 class Order(models.Model):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, null = True, blank = True)
     date_added = models.DateTimeField(auto_now_add=True)
