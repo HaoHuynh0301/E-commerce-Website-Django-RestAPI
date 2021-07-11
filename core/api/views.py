@@ -32,7 +32,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
         categoryInstance = self.get_object(pk = pk)
         if categoryInstance:
             totalProduct = categoryInstance.getTotalProduct
-            serializer = serializers.TotalCategoryProductsSerializer(data = {'totalProduct': totalProduct})
+            serializer = serializers.TotalProductsSerializer(data = {'totalProduct': totalProduct})
             if serializer.is_valid():
                 return Response(serializer.data, status = status.HTTP_200_OK)
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
@@ -121,7 +121,13 @@ class UpdatePassword(APIView):
 class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = serializers.OrderSerializer
-    queryset = models.Order.objects.all()
+    
+    def get_queryset(self):
+        return models.Order.objects.all()
+    
+    def get_object(self, queryset = None, **kwargs):
+        orderID = self.kwargs.get('pk')
+        return get_object_or_404(models.Order, id = orderID)
     
     @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
     def total_product(self, request, pk = None):
@@ -129,7 +135,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         if orderInstance:
             totalProducts = orderInstance.getTotalProducts
             print(totalProducts)
-            serializer = serializers.TotalProductsOrderSerializer(data = {'totalProduct': totalProducts})
+            serializer = serializers.TotalProductsSerializer(data = {'totalProduct': totalProducts})
             if serializer.is_valid():
                 context = {
                     'totalProduct': str(serializer.validated_data['totalProduct'])
@@ -148,3 +154,21 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data, status = status.HTTP_200_OK)
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
         return Response('Order not found', status = status.HTTP_404_NOT_FOUND)
+    
+    @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
+    def get_orderdetails(self, request, pk = None):
+        orderInstance = self.get_object(pk = pk)
+        if orderInstance:
+            orderDetails = orderInstance.getListOrderDetails
+            context = {}
+            ind = 1
+            for orderDetail in orderDetails:
+                data = {
+                    'product-name-' + str(ind): orderDetail.product.name,
+                    'product-price' + str(ind): orderDetail.product.price,
+                    'amount' + str(ind): orderDetail.amount
+                }
+                context.update(data)
+                ind += 1
+            return Response(context, status = status.HTTP_200_OK)
+        return Response('Order not found!', status = status.HTTP_404_NOT_FOUND)

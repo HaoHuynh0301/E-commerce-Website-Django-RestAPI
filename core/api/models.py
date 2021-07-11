@@ -35,6 +35,7 @@ class CustomUserManager(BaseUserManager):
         user.is_superuser = True
         user.save()
         return user
+    
 
 class Customer(AbstractBaseUser):
     email = models.EmailField(max_length = 255, unique = True, blank = False, verbose_name = 'email')
@@ -62,6 +63,7 @@ class Customer(AbstractBaseUser):
         return True
 
     def has_module_perms(self, app_label):
+        
         return True    
     
 class Category(models.Model):
@@ -84,6 +86,7 @@ class Category(models.Model):
         for product in products:
             totalProducts += 1
         return totalProducts
+    
     
 class Product(models.Model):
     category = models.ForeignKey(Category, related_name = 'product', on_delete = models.CASCADE)
@@ -141,7 +144,7 @@ class Order(models.Model):
     @property
     def getTotalProducts(self):
         totalProducts = 0
-        products = self.orderdetail_set.all()
+        products = self.orderdetail.all()
         for product in products:
             totalProducts += product.amount
         return totalProducts
@@ -149,13 +152,22 @@ class Order(models.Model):
     @property
     def getTotalProductsPrice(self):
         totalProductsPrice = 0
-        products = self.orderdetail_set.all()
+        products = self.orderdetail.all()
         for product in products:
             totalProductsPrice += product.getProductsPrice
         return totalProductsPrice
     
+    @property
+    def getListOrderDetails(self):
+        orderDetails = self.orderdetail.all()
+        orderDetailList = []
+        for orderDetail in orderDetails:
+            orderDetailList.append(orderDetail)
+        return orderDetailList
+    
+    
 class OrderDetail(models.Model):
-    order = models.ForeignKey(Order, on_delete = models.CASCADE)
+    order = models.ForeignKey(Order, on_delete = models.CASCADE, related_name = 'orderdetail')
     product = models.ForeignKey(Product, on_delete = models.SET_NULL, null = True, blank = True)
     amount = models.IntegerField(default = 1)
     
