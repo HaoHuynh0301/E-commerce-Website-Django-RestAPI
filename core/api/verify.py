@@ -9,6 +9,7 @@ class UpdatePasswordVerifyEmail(APIView):
     serializer_class = serializers.EmailVerificationSerializer
     token_param_config = openapi.Parameter(
         'token', in_ = openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
@@ -28,6 +29,7 @@ class DeactivationCustomerVerifyEmail(APIView):
     serializer_class = serializers.EmailVerificationSerializer
     token_param_config = openapi.Parameter(
         'token', in_ = openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
@@ -45,7 +47,6 @@ class DeactivationCustomerVerifyEmail(APIView):
         
 class VerifyEmail(APIView):
     serializer_class = serializers.EmailVerificationSerializer
-
     token_param_config = openapi.Parameter(
         'token', in_ = openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 

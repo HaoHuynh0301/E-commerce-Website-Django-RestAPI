@@ -172,3 +172,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 ind += 1
             return Response(context, status = status.HTTP_200_OK)
         return Response('Order not found!', status = status.HTTP_404_NOT_FOUND)
+    
+    @action(detail = True, methods = ['PUT'], permission_classes = [permissions.IsAuthenticated])
+    def set_paid(self, request, pk = None):
+        orderInstance = self.get_object(pk = pk)
+        if orderInstance:
+            orderInstance.paid = True
+            orderInstance.save()
+            return Response('Your order was paid!', status = status.HTTP_200_OK)
+        return Response('Order not  found!', status = status.HTTP_404_NOT_FOUND)
