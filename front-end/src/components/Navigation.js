@@ -14,6 +14,7 @@ class Navigation extends React.Component {
                 <nav id="side-nav">
                     <i className="fas fa-bars"/>
                     <div className="side-nav">
+                        <a className="close" onClick=""><i class="far fa-window-close"></i></a>
                         <Link to="#">Home</Link>
                         <Link to="#">Shop</Link>
                         <Link to="#">Contact</Link>
