@@ -19,19 +19,13 @@ class ProductViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     permissions_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = serializers.CategorySerializer
-    
-    def get_queryset(self):
-        return models.Category.objects.all()
-    
-    def get_object(self, queryset = None, **kwargs):
-        categoryID = self.kwargs.get('pk')
-        return get_object_or_404(models.Category, id = categoryID)
+    queryset = models.Category.objects.all()
     
     @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
     def getcategoryproduct(self, request, pk = None):
-        categoryInstance = self.get_object(pk = pk)
+        categoryInstance = self.get_object()
         if categoryInstance:
-            totalProduct = categoryInstance.getTotalProduct
+            totalProduct = categoryInstance.product.count()
             serializer = serializers.TotalProductsSerializer(data = {'totalProduct': totalProduct})
             if serializer.is_valid():
                 return Response(serializer.data, status = status.HTTP_200_OK)
@@ -39,6 +33,65 @@ class CategoryViewSet(viewsets.ModelViewSet):
         return Response('Category not found!', status = status.HTTP_404_NOT_FOUND)
     
     
+class OrderViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = serializers.OrderSerializer
+    queryset = models.Order.objects.all()
+    
+    @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
+    def total_product(self, request, pk = None):
+        orderInstance = self.get_object()
+        if orderInstance:
+            totalProducts = orderInstance.orderdetail.count()
+            serializer = serializers.TotalProductsSerializer(data = {'totalProduct': totalProducts})
+            if serializer.is_valid():
+                context = {
+                    'totalProduct': str(serializer.validated_data['totalProduct'])
+                }
+                return Response(context, status = status.HTTP_200_OK)
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+        return Response('Order not found!', status = status.HTTP_404_NOT_FOUND)
+    
+    @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
+    def total_product_price(self, request, pk = None):
+        orderInstance = self.get_object()
+        if orderInstance:
+            totalProductPrice = orderInstance.getTotalProductsPrice
+            serializer = serializers.TotalProductsPriceOrderSerializer(data = {'totalProductPrice': totalProductPrice})
+            if serializer.is_valid():
+                return Response(serializer.data, status = status.HTTP_200_OK)
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+        return Response('Order not found', status = status.HTTP_404_NOT_FOUND)
+    
+    @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
+    def get_orderdetails(self, request, pk = None):
+        orderInstance = self.get_object()
+        if orderInstance:
+            orderDetails = orderInstance.getListOrderDetails
+            context = {}
+            ind = 1
+            for orderDetail in orderDetails:
+                data = {
+                    'product-name-' + str(ind): orderDetail.product.name,
+                    'product-price' + str(ind): orderDetail.product.price,
+                    'amount' + str(ind): orderDetail.amount
+                }
+                context.update(data)
+                ind += 1
+            return Response(context, status = status.HTTP_200_OK)
+        return Response('Order not found!', status = status.HTTP_404_NOT_FOUND)
+    
+    @action(detail = True, methods = ['PUT'], permission_classes = [permissions.IsAuthenticated])
+    def set_paid(self, request, pk = None):
+        orderInstance = self.get_object()
+        if orderInstance:
+            orderInstance.paid = True
+            orderInstance.save()
+            return Response('Your order was paid!', status = status.HTTP_200_OK)
+        return Response('Order not  found!', status = status.HTTP_404_NOT_FOUND)
+    
+
+# User authentication
 class CustomerSignIn(APIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignInCustomerSerializer
@@ -116,68 +169,3 @@ class UpdatePassword(APIView):
         if isValid:
             return Response("YOUR PASSWORD WAS UPDATED", status = status.HTTP_200_OK)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-    
-    
-class OrderViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    serializer_class = serializers.OrderSerializer
-    
-    def get_queryset(self):
-        return models.Order.objects.all()
-    
-    def get_object(self, queryset = None, **kwargs):
-        orderID = self.kwargs.get('pk')
-        return get_object_or_404(models.Order, id = orderID)
-    
-    @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
-    def total_product(self, request, pk = None):
-        orderInstance = self.get_object(pk = pk)
-        if orderInstance:
-            totalProducts = orderInstance.getTotalProducts
-            print(totalProducts)
-            serializer = serializers.TotalProductsSerializer(data = {'totalProduct': totalProducts})
-            if serializer.is_valid():
-                context = {
-                    'totalProduct': str(serializer.validated_data['totalProduct'])
-                }
-                return Response(context, status = status.HTTP_200_OK)
-            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-        return Response('Order not found!', status = status.HTTP_404_NOT_FOUND)
-    
-    @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
-    def total_product_price(self, request, pk = None):
-        orderInstance = self.get_object(pk = pk)
-        if orderInstance:
-            totalProductPrice = orderInstance.getTotalProductsPrice
-            serializer = serializers.TotalProductsPriceOrderSerializer(data = {'totalProductPrice': totalProductPrice})
-            if serializer.is_valid():
-                return Response(serializer.data, status = status.HTTP_200_OK)
-            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-        return Response('Order not found', status = status.HTTP_404_NOT_FOUND)
-    
-    @action(detail = True, methods = ['GET'], permission_classes = [permissions.AllowAny])
-    def get_orderdetails(self, request, pk = None):
-        orderInstance = self.get_object(pk = pk)
-        if orderInstance:
-            orderDetails = orderInstance.getListOrderDetails
-            context = {}
-            ind = 1
-            for orderDetail in orderDetails:
-                data = {
-                    'product-name-' + str(ind): orderDetail.product.name,
-                    'product-price' + str(ind): orderDetail.product.price,
-                    'amount' + str(ind): orderDetail.amount
-                }
-                context.update(data)
-                ind += 1
-            return Response(context, status = status.HTTP_200_OK)
-        return Response('Order not found!', status = status.HTTP_404_NOT_FOUND)
-    
-    @action(detail = True, methods = ['PUT'], permission_classes = [permissions.IsAuthenticated])
-    def set_paid(self, request, pk = None):
-        orderInstance = self.get_object(pk = pk)
-        if orderInstance:
-            orderInstance.paid = True
-            orderInstance.save()
-            return Response('Your order was paid!', status = status.HTTP_200_OK)
-        return Response('Order not  found!', status = status.HTTP_404_NOT_FOUND)
