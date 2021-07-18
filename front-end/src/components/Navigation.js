@@ -83,9 +83,8 @@ function Navigation() {
     };
     const handleSignInSubmit = (e) => {
         e.preventDefault();
-        console.log('formData');
         axiosInstance
-            .post('token/', {
+            .post('http://127.0.0.1:8000/api/signin/', {
                 email: formSignInData.email,
                 password: formSignInData.password
             })
@@ -103,7 +102,7 @@ function Navigation() {
 
     return (
         <div>
-                <nav className="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+            <nav className="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
                 <div className="container">
                     <Link className="navbar-brand waves-effect" to="/home" >
                         <strong className="blue-text">Yame</strong>
@@ -158,18 +157,18 @@ function Navigation() {
                     <Modal.Title className = 'modal-title'>Sign in to Yame</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <form noValidate>
-                    <input name="email" type="text" className="form-control" placeholder="Email" 
-                        onChange = {handleSignInChange}
-                        required style={{borderRadius: '50px', marginBottom: '10px'}} />
-                    <input name="password" type="password" className="form-control" placeholder="Password"
-                        onChange = {handleSignInChange}
-                        required style={{borderRadius: '50px', marginBottom: '10px'}} />
-                    <button className="btn btn-primary" 
-                        onClick = {handleSignInSubmit}
-                        style={{borderRadius: '50px', padding: '0.5em', width: '100%', marginBottom: '10px'}}>Sign in</button>
-                    <div>New to BlogSite?  <span className=""><Link onClick={showModalSignUp} style={{color: '#00cccc'}} >Create new account</Link></span></div>
-                </form>
+                    <form noValidate>
+                        <input name="email" type="text" className="form-control" placeholder="Email" 
+                            onChange = {handleSignInChange}
+                            required style={{borderRadius: '50px', marginBottom: '10px'}} />
+                        <input name="password" type="password" className="form-control" placeholder="Password"
+                            onChange = {handleSignInChange}
+                            required style={{borderRadius: '50px', marginBottom: '10px'}} />
+                        <button className="btn btn-primary" 
+                            onClick = {handleSignInSubmit}
+                            style={{borderRadius: '50px', padding: '0.5em', width: '100%', marginBottom: '10px'}}>Sign in</button>
+                        <div>New to BlogSite?  <span className=""><Link onClick={showModalSignUp} style={{color: '#00cccc'}} >Create new account</Link></span></div>
+                    </form>
                 </Modal.Body>
             </Modal>
 
@@ -178,24 +177,24 @@ function Navigation() {
                     <Modal.Title className = 'modal-title'>Sign Up to BlogSite</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <form method="POST" aciton name="sentMessage" id="signUpForm" noValidate>
-                    <input name="email" type="text" className="form-control" 
-                        onChange={handleChange}
-                        placeholder="Email" required style={{borderRadius: '50px', marginBottom: '10px'}} />
-                    <input name="username" type="text" className="form-control" placeholder="Username" 
-                        onChange={handleChange}
-                        required style={{borderRadius: '50px', marginBottom: '10px'}} />
-                    <input name="firstname" type="text" className="form-control" placeholder="First Name" 
-                        onChange={handleChange}
-                        required style={{borderRadius: '50px', marginBottom: '10px'}} />
-                    <input name="password" type="password" className="form-control" placeholder="Password" 
-                        onChange={handleChange}
-                        required style={{borderRadius: '50px', marginBottom: '10px'}} />
-                    <button name="submit" type="submit" className="btn btn-primary" 
-                        onClick={handleSubmit}
-                        style={{borderRadius: '50px', padding: '0.5em', width: '100%', marginBottom: '10px'}}>Sisn up</button>
-                    <div>Already have an account?  <span><Link onClick={showModal} style={{color: '#00cccc'}}>Sign in</Link></span></div>
-                </form>
+                    <form method="POST" aciton name="sentMessage" id="signUpForm" noValidate>
+                        <input name="email" type="text" className="form-control" 
+                            onChange={handleChange}
+                            placeholder="Email" required style={{borderRadius: '50px', marginBottom: '10px'}} />
+                        <input name="username" type="text" className="form-control" placeholder="Username" 
+                            onChange={handleChange}
+                            required style={{borderRadius: '50px', marginBottom: '10px'}} />
+                        <input name="firstname" type="text" className="form-control" placeholder="First Name" 
+                            onChange={handleChange}
+                            required style={{borderRadius: '50px', marginBottom: '10px'}} />
+                        <input name="password" type="password" className="form-control" placeholder="Password" 
+                            onChange={handleChange}
+                            required style={{borderRadius: '50px', marginBottom: '10px'}} />
+                        <button name="submit" type="submit" className="btn btn-primary" 
+                            onClick={handleSubmit}
+                            style={{borderRadius: '50px', padding: '0.5em', width: '100%', marginBottom: '10px'}}>Sisn up</button>
+                        <div>Already have an account?  <span><Link onClick={showModal} style={{color: '#00cccc'}}>Sign in</Link></span></div>
+                    </form>
                 </Modal.Body>
             </Modal>
         </div>

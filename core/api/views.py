@@ -111,7 +111,7 @@ class CustomerSignIn(APIView):
                     'access_token': str(refresh.access_token)
                 }
                 return Response(data, status = status.HTTP_200_OK)
-            return Response('EMAIL OR PASSWORD IS INCORRECT!', status=status.HTTP_400_BAD_REQUEST)
+            return Response('EMAIL OR PASSWORD IS INCORRECT!', status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
     
