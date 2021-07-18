@@ -18,6 +18,7 @@ function Navigation() {
     // declare for modal
     const [isOpen, setIsOpen] = React.useState(false);
     const [isOpenSignUp, setIsOpenSignUp] = React.useState(false);
+    var isLogin = false;
 
     const showModal = () => {
         setIsOpen(true);
@@ -94,11 +95,15 @@ function Navigation() {
                 axiosInstance.defaults.headers['Authorization'] = 
                     'JWT' + localStorage.getItem('access-token');
                 SignUpAlert('signin'); 
+                isLogin = true;
                 hideModal();
             }).catch((err) => {
                 console.log(err);
             });
     };
+
+    var signInButton = <Link onClick={showModal} className="nav-link border border-light rounded waves-effect">
+    Login </Link>;
 
     return (
         <div>
@@ -143,9 +148,7 @@ function Navigation() {
                             </a>
                         </li>
                         <li className="nav-item">
-                            <Link onClick={showModal} className="nav-link border border-light rounded waves-effect">
-                                Login
-                            </Link>
+                            {signInButton}
                         </li>
                         </ul>
                     </div>
