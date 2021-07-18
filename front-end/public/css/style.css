@@ -1,63 +1,26 @@
-* {
-  box-sizing: border-box; }
+/* Required height of parents of the Half Page Carousel for proper displaying carousel itself */
+html,
+body,
+.view {
+  height: 100%; }
 
-body {
-  font-family: Arial, Helvetica, sans-serif; }
+/* Half Page Carousel itself*/
+.carousel {
+  height: 50%; }
 
-/* NAVIGATION MENU */
-nav {
-  margin: 0;
-  padding: 0;
-  background: black;
-  overflow: hidden;
-  font-size: 20px;
-  height: 70px; }
-  nav .side-nav a {
-    display: inline-block;
-    padding: 15px;
-    text-decoration: none;
-    color: #FFF; }
-    nav .side-nav a:hover {
-      color: red; }
-    nav .side-nav a.close {
-      display: none; }
-  nav i.fas {
-    position: absolute;
-    right: 10px;
-    margin: 9px 10px;
-    color: #FFF;
-    display: none; }
+.carousel .carousel-inner {
+  height: 100%; }
 
-@media only screen and (max-width: 768px) {
-  nav.mobile-mode {
-    text-align: center;
-    z-index: 1;
-    overflow: auto;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: #FFF; }
-    nav.mobile-mode .side-nav {
-      display: block; }
-      nav.mobile-mode .side-nav a {
-        display: block;
-        color: black; }
-        nav.mobile-mode .side-nav a.close {
-          font-weight: bold;
-          display: block; }
-          nav.mobile-mode .side-nav a.close i {
-            position: relative;
-            display: block;
-            color: #009688;
-            font-size: 20px; }
-        nav.mobile-mode .side-nav a:hover {
-          background-color: blanchedalmond; }
-  nav .side-nav {
-    height: 45px; }
-    nav .side-nav a {
-      display: none; }
-  nav i.fas {
-    display: block;
-    right: 0; } }
+.carousel .carousel-inner .carousel-item,
+.carousel .carousel-inner .active {
+  height: 100%; }
+
+/* Adjustment for mobile devices*/
+@media (max-width: 776px) {
+  .carousel {
+    height: 100%; } }
+/* Footer color for sake of consistency with Navbar */
+.page-footer {
+  background-color: #929FBA; }
 
 /*# sourceMappingURL=style.css.map */

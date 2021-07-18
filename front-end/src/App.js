@@ -7,15 +7,22 @@ import {
 } from "react-router-dom";
 import './App.css';
 import Navigation from './components/Navigation.js'
+import Footer from './components/Footer.js'
+import Wrapper from './components/Wrapper.js'
+import Home from './components/Home.js'
 
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div>
         <Navigation />
+        <Wrapper/>
         <Switch>
-          
+          <Route to="/home"> 
+            <Home />
+          </Route>
         </Switch>
+        <Footer />
       </div>
     </Router>
     
